@@ -8,6 +8,23 @@ import datetime
 import requests
 import sys
 from bs4 import BeautifulSoup
+import logging
+
+# 基礎設定
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    handlers=[logging.FileHandler('output.log', 'w', 'utf-8'), ])
+
+# 定義 handler 輸出 sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# 設定輸出格式
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# handler 設定輸出格式
+console.setFormatter(formatter)
+# 加入 hander 到 root logger
+logging.getLogger('').addHandler(console)
 
 
 def thunder():
@@ -65,18 +82,23 @@ while True:
                         chat_flag = 1
                         message = '時間： ' + occur_time + '\n經緯度：(' + str(latitude) + ' , ' + str(longitude) + ')' + '\n' + thunder()
                         lineNotifyMessage('\n' + message)
-                        print(datetime.datetime.now(), message)
+                        # print(datetime.datetime.now(), message)
+                        logging.warning(message)
 
         if flag == 0 and chat_flag == 1:
             chat_flag = 0
             message = '指定區域內落雷警報解除!'
             lineNotifyMessage('\n' + message)
-            print(datetime.datetime.now(), message)
+            # print(datetime.datetime.now(), message)
+            logging.warning(message)
         elif flag == 0 and chat_flag == 0:
             message = '指定區域內無落雷!'
-            print(datetime.datetime.now(), message)
+            # print(datetime.datetime.now(), message)
+            logging.info(message)
 
         time.sleep(150)
     except:
-        print("Unexpected error:", sys.exc_info()[0])
+        message = "Unexpected error:", sys.exc_info()[0]
+        # print(message)
+        logging.error(message)
         time.sleep(10)
